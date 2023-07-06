@@ -1,34 +1,83 @@
-// This plugin will open a window to prompt the user to enter a number, and
-// it will then create that many rectangles on the screen.
+let hasDecimalPointPart = false;
 
-// This file holds the main code for plugins. Code in this file has access to
-// the *figma document* via the figma global object.
-// You can access browser APIs in the <script> tag inside "ui.html" which has a
-// full browser environment (See https://www.figma.com/plugin-docs/how-plugins-run).
+async function loadFont() {
+  await figma.loadFontAsync({ family: "Roboto", style: "Regular" });
+}
 
-// This shows the HTML page in "ui.html".
-figma.showUI(__html__);
+async function addWarningText(node: SceneNode) {
+  await loadFont();
 
-// Calls to "parent.postMessage" from within the HTML page will trigger this
-// callback. The callback will be passed the "pluginMessage" property of the
-// posted message.
-figma.ui.onmessage = (msg) => {
-  // One way of distinguishing between different types of messages sent from
-  // your HTML page is to use an object with a "type" property like this.
-  if (msg.type === "create-rectangles") {
-    const nodes: SceneNode[] = [];
-    for (let i = 0; i < msg.count; i++) {
-      const rect = figma.createRectangle();
-      rect.x = i * 150;
-      rect.fills = [{ type: "SOLID", color: { r: 1, g: 0.5, b: 0 } }];
-      figma.currentPage.appendChild(rect);
-      nodes.push(rect);
+  const box = figma.createRectangle();
+  box.fills = [{ type: "SOLID", color: { r: 1, g: 0.9, b: 0 }, opacity: 1.0 }];
+
+  const warningText = figma.createText();
+  warningText.fontName = { family: "Roboto", style: "Regular" };
+  warningText.characters = "DO NOT USE DECIMAL POINT";
+  warningText.fontSize = 8;
+  warningText.fills = [{ type: "SOLID", color: { r: 1, g: 0, b: 0 } }];
+
+  box.resize(warningText.width + 10, warningText.height + 4);
+
+  warningText.x = box.x + (box.width - warningText.width) / 2;
+  warningText.y = box.y + (box.height - warningText.height) / 2;
+
+  const group = figma.group([box, warningText], figma.currentPage);
+  group.x = node.x;
+  group.y = node.y - box.height - 2;
+
+  if (node.parent && node.parent.type !== "PAGE") {
+    node.parent.appendChild(group);
+    group.name = "DO NOT USE DECIMAL POINT";
+  }
+}
+
+async function traverse(node: SceneNode) {
+  if ("children" in node) {
+    for (const child of node.children) {
+      await traverse(child);
     }
-    figma.currentPage.selection = nodes;
-    figma.viewport.scrollAndZoomIntoView(nodes);
   }
 
-  // Make sure to close the plugin when you're done. Otherwise the plugin will
-  // keep running, which shows the cancel button at the bottom of the screen.
+  if (
+    "x" in node &&
+    "y" in node &&
+    "width" in node &&
+    "height" in node &&
+    [
+      "VECTOR",
+      "STAR",
+      "LINE",
+      "ELLIPSE",
+      "POLYGON",
+      "RECTANGLE",
+      "TEXT",
+      "BOOLEAN_OPERATION",
+    ].includes(node.type)
+  ) {
+    if (
+      node.x % 1 !== 0 ||
+      node.y % 1 !== 0 ||
+      node.width % 1 !== 0 ||
+      node.height % 1 !== 0
+    ) {
+      hasDecimalPointPart = true;
+      await addWarningText(node);
+    }
+  }
+}
+
+figma.on("run", async () => {
+  for (const page of figma.root.children) {
+    if (page.type === "PAGE") {
+      for (const child of page.children) {
+        await traverse(child);
+      }
+    }
+  }
+
+  if (!hasDecimalPointPart) {
+    figma.notify("Perfect components!");
+  }
+
   figma.closePlugin();
-};
+});
