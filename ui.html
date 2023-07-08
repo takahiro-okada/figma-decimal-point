@@ -1,17 +1,82 @@
-<h2>Rectangle Creator</h2>
-<p>Count: <input id="count" value="5"></p>
-<button id="create">Create</button>
-<button id="cancel">Cancel</button>
+<div class="l-input-groups">
+  <div class="l-input-group">
+    <label class="c-label" for="box-color">Box Color:</label>
+    <input
+      class="c-input"
+      type="color"
+      id="box-color"
+      name="box-color"
+      value="#FFCC00"
+    />
+  </div>
+  <div class="l-input-group">
+    <label class="c-label" for="text-color">Text Color:</label>
+    <input
+      class="c-input"
+      type="color"
+      id="text-color"
+      name="text-color"
+      value="#FF0000"
+    />
+  </div>
+</div>
+<button class="c-button" id="find-button">Find</button>
+
+<style>
+  /* Foundation */
+  body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    padding: 16px;
+  }
+
+  /* Layout */
+  .l-input-groups {
+    display: flex;
+    gap: 20px;
+  }
+  .l-input-group {
+    margin-bottom: 16px;
+  }
+
+  /* Object */
+  .c-label {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .c-input {
+    width: 30px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  /* Component */
+  .c-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .c-button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
 <script>
+  document.getElementById("find-button").onclick = function () {
+    const boxColor = document.getElementById("box-color").value;
+    const textColor = document.getElementById("text-color").value;
 
-document.getElementById('create').onclick = () => {
-  const textbox = document.getElementById('count');
-  const count = parseInt(textbox.value, 10);
-  parent.postMessage({ pluginMessage: { type: 'create-rectangles', count } }, '*')
-}
-
-document.getElementById('cancel').onclick = () => {
-  parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*')
-}
-
+    parent.postMessage(
+      { pluginMessage: { type: "run-plugin", boxColor, textColor } },
+      "*"
+    );
+  };
 </script>
