@@ -1,4 +1,8 @@
+figma.showUI(__html__, { width: 240, height: 160 });
+
 let hasDecimalPointPart = false;
+let boxColor = { r: 1, g: 0.9, b: 0 };
+let textColor = { r: 1, g: 0, b: 0 };
 
 async function loadFont() {
   await figma.loadFontAsync({ family: "Roboto", style: "Regular" });
@@ -8,13 +12,13 @@ async function addWarningText(node: SceneNode) {
   await loadFont();
 
   const box = figma.createRectangle();
-  box.fills = [{ type: "SOLID", color: { r: 1, g: 0.9, b: 0 }, opacity: 1.0 }];
+  box.fills = [{ type: "SOLID", color: boxColor, opacity: 1.0 }];
 
   const warningText = figma.createText();
   warningText.fontName = { family: "Roboto", style: "Regular" };
   warningText.characters = "DO NOT USE DECIMAL POINT";
   warningText.fontSize = 8;
-  warningText.fills = [{ type: "SOLID", color: { r: 1, g: 0, b: 0 } }];
+  warningText.fills = [{ type: "SOLID", color: textColor }];
 
   box.resize(warningText.width + 10, warningText.height + 4);
 
@@ -66,18 +70,37 @@ async function traverse(node: SceneNode) {
   }
 }
 
-figma.on("run", async () => {
-  for (const page of figma.root.children) {
-    if (page.type === "PAGE") {
-      for (const child of page.children) {
-        await traverse(child);
+figma.ui.onmessage = async (msg) => {
+  if (msg.type === "run-plugin") {
+    let boxColorResult = hexToRgb(msg.boxColor);
+    if (boxColorResult != null) boxColor = boxColorResult;
+
+    let textColorResult = hexToRgb(msg.textColor);
+    if (textColorResult != null) textColor = textColorResult;
+
+    for (const page of figma.root.children) {
+      if (page.type === "PAGE") {
+        for (const child of page.children) {
+          await traverse(child);
+        }
       }
     }
-  }
 
-  if (!hasDecimalPointPart) {
-    figma.notify("Perfect components!");
-  }
+    if (!hasDecimalPointPart) {
+      figma.notify("Perfect components!");
+    }
 
-  figma.closePlugin();
-});
+    figma.closePlugin();
+  }
+};
+
+function hexToRgb(hex: string) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+        r: parseInt(result[1], 16) / 255,
+        g: parseInt(result[2], 16) / 255,
+        b: parseInt(result[3], 16) / 255,
+      }
+    : { r: 0, g: 0, b: 0 }; // default to black color if the hex code is not valid
+}
