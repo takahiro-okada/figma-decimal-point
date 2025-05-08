@@ -56,6 +56,7 @@ async function traverse(node: SceneNode) {
       "RECTANGLE",
       "TEXT",
       "BOOLEAN_OPERATION",
+      "FRAME",
     ].includes(node.type)
   ) {
     if (
