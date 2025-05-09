@@ -1,40 +1,71 @@
-Below are the steps to get your plugin running. You can also find instructions at:
+# Figma Decimal Point Plugin
 
-  https://www.figma.com/plugin-docs/plugin-quickstart-guide/
+This Figma plugin identifies nodes in your design that use decimal points in their position or dimensions and adds a warning label to them. It helps ensure that all components are aligned to whole pixels for better design consistency.
 
-This plugin template uses Typescript and NPM, two standard tools in creating JavaScript applications.
+## Features
 
-First, download Node.js which comes with NPM. This will allow you to install TypeScript and other
-libraries. You can find the download link here:
+- Detects nodes with decimal points in their `x`, `y`, `width`, or `height` properties.
+- Adds a warning label to nodes with decimal points.
+- Supports customization of warning box and text colors via the plugin UI.
 
-  https://nodejs.org/en/download/
+## Installation
 
-Next, install TypeScript using the command:
+1. Clone this repository:
 
-  npm install -g typescript
+```bash
+git clone https://github.com/your-repo/figma-decimal-point.git
+cd figma-decimal-point
+```
 
-Finally, in the directory of your plugin, get the latest type definitions for the plugin API by running:
+2. Install dependencies:
 
-  npm install --save-dev @figma/plugin-typings
+```bash
+npm install
+```
 
-If you are familiar with JavaScript, TypeScript will look very familiar. In fact, valid JavaScript code
-is already valid Typescript code.
+3. Build the plugin:
 
-TypeScript adds type annotations to variables. This allows code editors such as Visual Studio Code
-to provide information about the Figma API while you are writing code, as well as help catch bugs
-you previously didn't notice.
+```bash
+npm run build
+```
 
-For more information, visit https://www.typescriptlang.org/
+4. Open Figma, go to Plugins > Development > New Plugin, and select the manifest.json file from this project.
 
-Using TypeScript requires a compiler to convert TypeScript (code.ts) into JavaScript (code.js)
-for the browser to run.
+## Usage
 
-We recommend writing TypeScript code using Visual Studio code:
+1. Open the plugin in Figma.
+2. Use the color pickers in the UI to customize the warning box and text colors (optional).
+3. Click the Find button to scan your design for nodes with decimal points.
+4. If any nodes with decimal points are found, a warning label will be added near them. If no issues are found, a notification will appear saying "Perfect components!"
 
-1. Download Visual Studio Code if you haven't already: https://code.visualstudio.com/.
-2. Open this directory in Visual Studio Code.
-3. Compile TypeScript to JavaScript: Run the "Terminal > Run Build Task..." menu item,
-    then select "npm: watch". You will have to do this again every time
-    you reopen Visual Studio Code.
+## Development
 
-That's it! Visual Studio Code will regenerate the JavaScript file every time you save.
+Prerequisites
+
+- Node.js (version 14.17 or higher)
+- npm
+
+Scripts
+
+- npm run build: Builds the plugin for production.
+- npm run watch: Watches for changes and rebuilds the plugin automatically.
+
+File Structure
+
+- code.ts: The main plugin logic.
+- ui.tsx: The React-based UI for the plugin.
+- manifest.json: Figma plugin configuration.
+- package.json: Project dependencies and scripts.
+
+## Dependencies
+
+- @figma/plugin-typings: Type definitions for Figma plugins.
+- TypeScript: Type-safe JavaScript.
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
