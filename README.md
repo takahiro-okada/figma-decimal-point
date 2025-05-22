@@ -2,11 +2,17 @@
 
 This Figma plugin identifies nodes in your design that use decimal points in their position or dimensions and adds a warning label to them. It helps ensure that all components are aligned to whole pixels for better design consistency.
 
+![4a72af6e83f1bc988231414a2d679693ef02fb27](https://github.com/user-attachments/assets/69ee133e-f83f-42a7-8edf-c3bd33305df1)
+
+
 ## Features
 
 - Detects nodes with decimal points in their `x`, `y`, `width`, or `height` properties.
 - Adds a warning label to nodes with decimal points.
 - Supports customization of warning box and text colors via the plugin UI.
+
+![CleanShot 2025-05-23 at 05 24 21](https://github.com/user-attachments/assets/edc75231-a4ea-4f4d-b317-b7697089ad9e)
+
 
 ## Installation
 
